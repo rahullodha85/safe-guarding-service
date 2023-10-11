@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-from dbmigration import create_appointment
+from dbmigration import create_appointment, get_appointment
 
 app = FastAPI()
 
@@ -42,7 +42,25 @@ def setup_db():
 # Create an item
 @app.post("/appointment/", response_model=Item)
 async def create_item(item: Item, Session=Depends(setup_db)):
-    create_appointment(Session, item)
+    db_appointment = create_appointment(Session, item)
+    return Item(
+        start_time=db_appointment.start_time,
+        end_time=db_appointment.end_time,
+        employee_arrived=db_appointment.employee_arrived,
+        employee_departed=db_appointment.employee_departed,
+        employee_id=db_appointment.employee_id,
+        patient_id=db_appointment.patient_id
+    )
+
+@app.put("/arrived/")
+async def employee_arrived(appointment_id: int, Session=Depends(setup_db)):
+    get_appointment(Session, appointment_id)
+    return None
+
+@app.put("/departed/")
+async def employee_departed(appointment_id: int,Session=Depends(setup_db):
+    pass
+
 
 
 if __name__ == "__main__":

@@ -1,7 +1,8 @@
+from typing import List
+
 from sqlalchemy import create_engine, Integer, Date, Boolean, String, ForeignKey
-from sqlalchemy.orm import declarative_base, relationship, Session
+from sqlalchemy.orm import declarative_base, relationship, Session, Mapped
 from sqlalchemy.testing.schema import Column
-from sqlalchemy.orm import sessionmaker
 
 DATABASE_URL = "mysql+mysqlconnector://root:example@localhost/codefest"
 engine = create_engine(DATABASE_URL)
@@ -17,6 +18,7 @@ class Patient(Base):
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False, unique=True)
+    appointments: Mapped[List["Appointment"]] = relationship()
 
 
 class Employee(Base):
@@ -26,6 +28,7 @@ class Employee(Base):
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False, unique=True)
+    appointments: Mapped[List["Appointment"]] = relationship(back_populates="employee")
 
 
 class Appointment(Base):
@@ -37,12 +40,13 @@ class Appointment(Base):
     employee_arrived = Column(Boolean, default=False)
     employee_departed = Column(Boolean, default=False)
     employee_id = Column(Integer, ForeignKey('employee.id'))
-    employee = relationship("employee", back_populates="appointment")
+    employee: Mapped["Employee"] = relationship(back_populates="appointments")
     patient_id = Column(Integer, ForeignKey('patient.id'))
-    patient = relationship("patient", back_populates="appointment")
+    patient: Mapped["Patient"] = relationship(back_populates="appointments")
 
 
 def create_appointment(db: Session, appointment):
+    # db_item = Appointment(**appointment.dict())
     db_item = Appointment(
         start_time=appointment.start_time,
         end_time=appointment.end_time,
@@ -56,6 +60,10 @@ def create_appointment(db: Session, appointment):
     db.refresh(db_item)
     db.close()
     return db_item
+
+
+def get_appointment(db: Session, appointment_id: int):
+    return db.query(Appointment).filter(Appointment.id == appointment_id).first()
 
 
 Base.metadata.create_all(engine)
