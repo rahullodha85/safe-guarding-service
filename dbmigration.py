@@ -2,12 +2,14 @@
 from typing import List
 
 # import databases as databases
-from sqlalchemy import create_engine, Integer, Date, Boolean, String, ForeignKey
+from sqlalchemy import create_engine, Integer, Date, Boolean, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import declarative_base, relationship, Session, Mapped
 from sqlalchemy.testing.schema import Column
 
-DATABASE_URL = "mysql+mysqlconnector://root:example@localhost/codefest"
-engine = create_engine(DATABASE_URL)
+MYSQL_DATABASE_URL = "mysql+mysqlconnector://root:example@localhost/codefest"
+SQLLITE3_DB_URL = "sqlite:///my_database.db"
+engine = create_engine(SQLLITE3_DB_URL)
+# engine = create_engine(MYSQL_DATABASE_URL)
 # database = databases.Database(DATABASE_URL)
 engine.connect()
 
