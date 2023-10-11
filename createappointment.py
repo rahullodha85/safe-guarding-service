@@ -1,9 +1,7 @@
 import datetime
-from datetime import time
-from typing import Optional
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
@@ -67,6 +65,7 @@ async def employee_arrived(appointment_id: int, Session=Depends(setup_db)):
         patient_id=db_appointment.patient_id
     )
 
+
 @app.put("/departed/", response_model=Item)
 async def employee_departed(appointment_id: int, Session=Depends(setup_db)):
     appointment = get_appointment(Session, appointment_id)
@@ -81,6 +80,17 @@ async def employee_departed(appointment_id: int, Session=Depends(setup_db)):
             patient_id=db_appointment.patient_id
         )
 
+
+# @app.get("/appointments/{appointment_id}/poll/")
+# async def poll_item(appointment_id: int, timeout: int = 10):
+#     return poll(appointment_id)
+#     # async with database.transaction():
+#     #     item = await database.execute(.__table__.select().where(Item.id == appointment_id))
+#     #     if item:
+#     #         return {"message": "Item found", "item": dict(item)}
+#     #     else:
+#     #         await asyncio.sleep(timeout)
+#     #         return {"message": "Item not found after polling"}
 
 
 if __name__ == "__main__":

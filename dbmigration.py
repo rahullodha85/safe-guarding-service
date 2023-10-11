@@ -1,11 +1,14 @@
+# import asyncio
 from typing import List
 
+# import databases as databases
 from sqlalchemy import create_engine, Integer, Date, Boolean, String, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship, Session, Mapped
 from sqlalchemy.testing.schema import Column
 
 DATABASE_URL = "mysql+mysqlconnector://root:example@localhost/codefest"
 engine = create_engine(DATABASE_URL)
+# database = databases.Database(DATABASE_URL)
 engine.connect()
 
 Base = declarative_base()
@@ -65,10 +68,22 @@ def create_appointment(db: Session, appointment):
 def get_appointment(db: Session, appointment_id: int) -> Appointment:
     return db.query(Appointment).filter(Appointment.id == appointment_id).first()
 
+
 def update_appointment(db: Session, appointment: Appointment) -> Appointment:
     db.commit()
     db.refresh(appointment)
     return appointment
+
+
+# async def poll(appointment_id: int, timeout: int):
+#     async with database.transaction():
+#         item = await database.execute(Appointment.__table__.select().where(Appointment.id == appointment_id
+#                                                                            and Appointment.employee_departed is True))
+#         if item:
+#             return {"message": "Item found", "item": dict(item)}
+#         else:
+#             await asyncio.sleep(timeout)
+#             return {"message": "Item not found after polling"}
 
 
 Base.metadata.create_all(engine)

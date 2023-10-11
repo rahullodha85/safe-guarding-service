@@ -36,15 +36,7 @@ async def create_item(item: dict):
     await database.execute(query)
     return {"message": "Item created successfully"}
 
-@app.get("/items/{item_id}/poll/")
-async def poll_item(item_id: int, timeout: int = 10):
-    async with database.transaction():
-        item = await database.execute(Item.__table__.select().where(Item.id == item_id))
-        if item:
-            return {"message": "Item found", "item": dict(item)}
-        else:
-            await asyncio.sleep(timeout)
-            return {"message": "Item not found after polling"}
+
 
 if __name__ == "__main__":
     import uvicorn
