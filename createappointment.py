@@ -8,8 +8,14 @@ items = []
 
 # Pydantic model for item data
 class Item(BaseModel):
-    name: str
-    description: str
+    start_time: int
+    end_time: int
+    employee_arrived: str
+    employee_departed: str
+    employee_id: int
+    employee: str
+    patient_id: int
+    patient: str
 
 # Create an item
 @app.post("/items/", response_model=Item)
