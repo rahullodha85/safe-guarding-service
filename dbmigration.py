@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Integer, Date, Boolean, String, ForeignKey
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base, relationship, Session
 from sqlalchemy.testing.schema import Column
 from sqlalchemy.orm import sessionmaker
 
@@ -40,6 +40,22 @@ class Appointment(Base):
     employee = relationship("employee", back_populates="appointment")
     patient_id = Column(Integer, ForeignKey('patient.id'))
     patient = relationship("patient", back_populates="appointment")
+
+
+def create_appointment(db: Session, appointment):
+    db_item = Appointment(
+        start_time=appointment.start_time,
+        end_time=appointment.end_time,
+        employee_departed=False,
+        employee_arrived=False,
+        employee_id=appointment.employee_id,
+        patient_id=appointment.patient_id
+    )
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    db.close()
+    return db_item
 
 
 Base.metadata.create_all(engine)
