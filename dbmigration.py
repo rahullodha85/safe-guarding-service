@@ -62,8 +62,13 @@ def create_appointment(db: Session, appointment):
     return db_item
 
 
-def get_appointment(db: Session, appointment_id: int):
+def get_appointment(db: Session, appointment_id: int) -> Appointment:
     return db.query(Appointment).filter(Appointment.id == appointment_id).first()
+
+def update_appointment(db: Session, appointment: Appointment) -> Appointment:
+    db.commit()
+    db.refresh(appointment)
+    return appointment
 
 
 Base.metadata.create_all(engine)
